@@ -79,7 +79,7 @@ li { margin: 0.2em 0; }
 .num { font-variant-numeric: tabular-nums lining-nums; }
 .muted { color: var(--muted); }
 .small { font-size: 0.88rem; }
-.accent { color: var(--accent); font-weight: 500; margin-bottom: 0.2rem; }
+.accent { color: var(--accent); font-weight: 400; margin-bottom: 0.2rem; }
 
 /* ---------- 頂部導覽 ---------- */
 .topbar { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: saturate(140%) blur(8px); border-bottom: 1px solid var(--line); }
@@ -138,6 +138,16 @@ li { margin: 0.2em 0; }
 .section-title { font-family: var(--font-head); font-size: clamp(1.4rem, 2.4vw, 1.7rem); font-weight: 700; margin-bottom: 1rem; }
 .bio { font-size: 1rem; }
 .stack { display: grid; gap: 1rem; }
+
+/* 最新動態 */
+.news { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.45rem; }
+.news li { display: grid; grid-template-columns: 7.5rem 1fr; gap: 0.75rem; align-items: baseline; }
+.news time { color: var(--muted); font-size: 0.9rem; white-space: nowrap; }
+.news .pill.upcoming { font-size: 0.72rem; padding: 0 0.5rem; margin-right: 0.35rem; vertical-align: 0.1em; }
+.news-link { text-decoration: underline; text-underline-offset: 0.2em; padding: 0 0.15rem; }
+@media (max-width: 560px) {
+  .news li { grid-template-columns: 1fr; gap: 0.1rem; }
+}
 
 /* 卡片內容（學歷、獲獎、著作、專案共用） */
 .entry, .project { padding: 1rem 1.25rem; }

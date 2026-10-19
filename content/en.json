@@ -21,6 +21,39 @@
     "role": "B.S. Student (4th year)",
     "inst": "National Sun Yat-sen University"
   },
+  "news": [
+    {
+      "date": "2027-01",
+      "text": "Exchange semester at Nanyang Technological University (NTU), Singapore, through May 2027.",
+      "link": "education"
+    },
+    {
+      "date": "2026-11",
+      "text": "Paper to be presented at CSMMT 2026 (Nov. 6–7, National Taiwan University of Science and Technology).",
+      "link": "csmmt-2026"
+    },
+    {
+      "date": "2026-09",
+      "text": "Journal manuscript submitted to IEEE Access (Sep. 20); under review.",
+      "link": "ieee-access-2026"
+    },
+    {
+      "date": "2026-07",
+      "text": "NSTC College Student Research Project approved and started (through Feb. 2027).",
+      "link": "smart-bin"
+    },
+    {
+      "date": "2026-07",
+      "text": "Summer UROP research internship at City Science Lab @ Taipei Tech (Jul.–Aug.).",
+      "link": "openarm-bimanual"
+    },
+    {
+      "date": "2025",
+      "text": "TEL Robot Combat 2025: our team received the Creative Technology Award (Excellence).",
+      "link": "tel-robot-combat"
+    }
+  ],
+  "_newsNote": "news: dated items shown newest first; date is YYYY-MM (or YYYY); items after the current date are marked Upcoming; link is a section/project id on the page. Facts with sources only.",
   "research": [
     {
       "id": "smart-bin",
@@ -444,7 +477,8 @@
       "seeProject": "See project",
       "emailCopied": "Email copied",
       "openGmail": "Write in Gmail",
-      "close": "Close"
+      "close": "Close",
+      "upcoming": "Upcoming"
     },
     "sections": {
       "about": "About",
@@ -453,7 +487,8 @@
       "awards": "Awards & Grants",
       "activities": "Other Work & Activities",
       "education": "Education",
-      "experience": "Experience"
+      "experience": "Experience",
+      "news": "News"
     },
     "contact": {
       "email": "Email",

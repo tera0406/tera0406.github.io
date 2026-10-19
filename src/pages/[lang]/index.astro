@@ -27,6 +27,14 @@ const links = [
   ['file', ui.contact.cv, cvUrl, 'tera0406.github.io'],
 ] as const;
 const figId = (file: string) => `fig-${file.replace(/\W/g, '-')}`;
+// 最新動態：依日期由新到舊；date 是 YYYY-MM 或 YYYY。
+const MONTHS_EN = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'];
+const fmtDate = (d: string) => {
+  const [y, m] = d.split('-');
+  if (!m) return y;
+  return lang === 'zh' ? `${y} 年 ${Number(m)} 月` : `${MONTHS_EN[Number(m) - 1]} ${y}`;
+};
+const news = [...c.news].sort((a, b) => b.date.localeCompare(a.date));
 ---
 <Base lang={lang} c={c}>
   <a class="skip-link" href="#main">{ui.skip}</a>
@@ -76,6 +84,21 @@ const figId = (file: string) => `fig-${file.replace(/\W/g, '-')}`;
       <section class="section" id="about" aria-labelledby="h-about">
         <h2 class="section-title" id="h-about">{ui.sections.about}</h2>
         <p class="bio" set:html={rich(c.hero.summary)} />
+      </section>
+
+      <section class="section" id="news" aria-labelledby="h-news">
+        <h2 class="section-title" id="h-news">{ui.sections.news}</h2>
+        <ul class="news">
+          {news.map((n) => (
+            <li>
+              <time class="num" datetime={n.date}>{fmtDate(n.date)}</time>
+              <span class="news-text">
+                <span class="pill upcoming" hidden>{ui.labels.upcoming}</span>
+                {n.text}{n.link && <>&nbsp;<a class="news-link" href={`#${n.link}`} aria-label={`${n.text} ${ui.labels.more}`}>↗</a></>}
+              </span>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section class="section" id="education" aria-labelledby="h-edu">
@@ -291,6 +314,13 @@ const figId = (file: string) => `fig-${file.replace(/\W/g, '-')}`;
       }
     };
     addEventListener('hashchange', openTarget); openTarget();
+    // 最新動態：日期在今天之後的項目標示「即將」（在瀏覽器端判斷，不會因為網站沒重新部署而過期）。
+    const now = new Date();
+    const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    document.querySelectorAll<HTMLElement>('.news time').forEach((t) => {
+      const d = t.getAttribute('datetime') ?? '';
+      if ((d.length === 7 && d > thisMonth) || (d.length === 4 && d > thisMonth.slice(0, 4))) t.parentElement?.querySelector<HTMLElement>('.upcoming')?.removeAttribute('hidden');
+    });
 
     // Email：很多電腦沒有設定預設郵件程式，按 mailto 會沒反應。
     // 所以點擊時同時複製信箱並顯示提示（含 Gmail 寄信連結）；有郵件程式的人照樣會開啟。

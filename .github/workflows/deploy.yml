@@ -25,7 +25,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check:content
-      - run: npm run build
+      - name: Install Chromium for the CV PDF
+        run: npx playwright install --with-deps chromium
+      # npm run cv ＝ 建置 → 用 Chromium 把 /en/cv/、/zh/cv/ 輸出成 PDF → 再建置一次，確保 PDF 永遠和內容同步。
+      - name: Build site and one-page CV PDFs
+        run: npm run cv
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

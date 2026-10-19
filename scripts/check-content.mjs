@@ -1,10 +1,9 @@
 // 內容檢查：部署前自動執行（npm run check:content）。
 // 檢查中英文內容檔結構一致、圖片存在、YouTube ID 格式、沒有 TODO 或不該公開的資料。
 import { readFileSync, existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
+import { collectChars, collectHeadingChars, root } from './font-chars.mjs';
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const load = (lang) => JSON.parse(readFileSync(join(root, 'content', `${lang}.json`), 'utf8'));
 const errors = [];
 const zh = load('zh');
@@ -56,6 +55,20 @@ for (const [lang, c] of [['zh', zh], ['en', en]]) {
 // 3b. 一頁式 CV 的 PDF 要存在（用 npm run cv 產生）。
 for (const lang of ['en', 'zh']) {
   if (!existsSync(join(root, 'public', 'cv', `Chao-Yuan_Chiang_CV_${lang}.pdf`))) errors.push(`缺少 public/cv/Chao-Yuan_Chiang_CV_${lang}.pdf，請執行 npm run cv`);
+}
+
+// 3c. 自託管字型子集要涵蓋內容裡的每個字（用 npm run fonts 重新產生）。
+const fontsDir = join(root, 'public', 'fonts');
+if (!existsSync(join(fontsDir, 'manifest.json'))) errors.push('缺少 public/fonts/manifest.json，請執行 npm run fonts');
+else {
+  const manifest = JSON.parse(readFileSync(join(fontsDir, 'manifest.json'), 'utf8'));
+  for (const f of Object.keys(manifest.files)) if (!existsSync(join(fontsDir, f))) errors.push(`缺少字型檔 public/fonts/${f}，請執行 npm run fonts`);
+  for (const lang of ['zh', 'en']) {
+    for (const [label, need, have] of [['內文', collectChars(lang), manifest.chars?.[lang] ?? ''], ['標題', collectHeadingChars(lang), manifest.headingChars?.[lang] ?? '']]) {
+      const missing = [...need].filter((ch) => !have.includes(ch));
+      if (missing.length) errors.push(`${lang} ${label}字型子集缺少 ${missing.length} 個字（${missing.slice(0, 20).join('')}${missing.length > 20 ? '…' : ''}），請執行 npm run fonts`);
+    }
+  }
 }
 
 // 4. 中文用語：台灣用語檢查（只檢查中文檔）。
