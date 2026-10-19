@@ -16,6 +16,7 @@ npm install            # 第一次才需要
 npm run dev            # 本機預覽 http://localhost:4321/
 npm run check:content  # 改完內容先檢查
 npm run build          # 建置到 dist/（部署前 CI 也會跑）
+npm run cv             # 重新產生一頁式 CV（public/cv/*.pdf），內容有改就要跑
 ```
 
 - 改文字：只要改 `content/zh.json` 和 `content/en.json`，兩個檔案的結構要一模一樣。
@@ -42,6 +43,8 @@ npm run build          # 建置到 dist/（部署前 CI 也會跑）
 | `src/styles/global.css` | 全部樣式。顏色變數在開頭的 `:root`，深色模式緊接在後，列印樣式在最後 |
 | `scripts/check-content.mjs` | 內容檢查，CI 部署前會跑，失敗就不會部署 |
 | `public/og-zh.png`、`public/og-en.png` | 社群分享預覽圖（1200×630） |
+| `src/pages/[lang]/cv.astro` | 一頁式 CV 的 A4 版面（`/en/cv/`、`/zh/cv/`，noindex），內容讀同一份 JSON |
+| `scripts/build-cv.mjs`、`public/cv/*.pdf` | 用 Chromium 把 CV 頁輸出成 PDF；超過一頁會失敗。網站左欄的 CV 圖示和頁尾的「下載 CV」連到這兩份 PDF |
 | `astro.config.mjs` | 依 `GITHUB_REPOSITORY` 自動決定 `base`：repo 名稱是 `帳號.github.io` 時用 `/` |
 | `.github/workflows/deploy.yml` | push 到 `main` 時依序執行 `npm ci` → `check:content` → `build` → 部署 |
 
@@ -64,6 +67,7 @@ npm run build          # 建置到 dist/（部署前 CI 也會跑）
    - 不放未公開的夾爪（UMI）專案，任何字樣都不行。
    - 不放 Thingiverse 帳號名稱（帳號名會透露生日）。
    - 不放排球隊相關內容（本人要求拿掉）。
+   - **不要連結或提到 `tera0406/trash_bin` repo**（本人決定不公開）。
    - 不要 commit 原始申請文件，例如 pptx、docx、論文 PDF、證明文件、推薦信，`.gitignore` 已經擋掉。
    - 公開的聯絡方式只有：`cdtera2446890@gmail.com`、LinkedIn、GitHub `tera0406`、MakerWorld。
 7. **Pokémon 卡盒**只寫設計，**不提販售**，標題用中性名稱。
@@ -145,7 +149,16 @@ npm run build          # 建置到 dist/（部署前 CI 也會跑）
 - **想改放全文 PDF**：先跟本人確認期刊的分享政策，再把檔案放在 `public/papers/`，並在 JSON 加連結。目前的決定是不放。
 - **新論文**：加在 `publications[]` 最前面。
 
-#### D. 其他
+#### D. 更新一頁式 CV（每次改內容都要做）
+
+CV 的 PDF 是事先產生、commit 進 repo 的，**CI 不會自動重產**。只要改了 `content/*.json`，就要：
+
+1. 執行 `npm run cv`。這會先建置網站、輸出 `public/cv/Chao-Yuan_Chiang_CV_{en,zh}.pdf`，再建置一次。
+   - 需要 Chromium。本機第一次使用請先跑 `npx playwright install chromium`；雲端環境可以設 `CHROMIUM_PATH=/opt/pw-browsers/chromium-*/chrome-linux/chrome`。
+2. 指令失敗、顯示超過一頁時，就精簡內容。CV 用的欄位是：`research[].summary`、`brief`、`org`、`period`，`experience[].items`，`publications[].title`、`venue`、`status`，`awards[].title`、`org`。
+3. 把 PDF 轉成圖片看過一遍（`pdftoppm -r 80 -png`），再連同 JSON 一起 commit。
+
+#### E. 其他
 
 - **新獎項**：`awards[]`，格式為 `title`、`org`、`year`、`note`。
 - **學歷變動**：例如畢業或開始交換，改 `education[]` 的 `badge`、`detail`。
@@ -154,7 +167,7 @@ npm run build          # 建置到 dist/（部署前 CI 也會跑）
 
 ### 2.5 驗證（每次修改後都要做）
 
-1. `npm run check:content`：檢查中英結構一致、圖片存在、每張圖都有 alt 和 thumbAlt、YouTube ID 格式、沒有 TODO 和成績類字眼、沒有對岸用語。
+1. `npm run check:content`：檢查中英結構一致（`_` 開頭的註記欄位不比對）、CV 的 PDF 存在、圖片存在、每張圖都有 alt 和 thumbAlt、YouTube ID 格式、沒有 TODO 和成績類字眼、沒有對岸用語。
 2. `npm run build`：必須成功。
 3. 用 Playwright 截圖檢查（Chromium 在 `/opt/pw-browsers`；`npx astro preview --port 4321` 可以啟動預覽）：
    - 寬度：1440 和 390
@@ -162,7 +175,7 @@ npm run build          # 建置到 dist/（部署前 CI 也會跑）
    - 語言：中英文都要看
    - 確認沒有水平捲動
    - 截圖拿給本人看
-4. 列印檢查：用 `page.pdf()` 輸出 A4，確認是白底黑字，大約兩頁。
+4. 有改內容就執行 `npm run cv`，確認兩份 CV 都只有一頁。
 
 ### 2.6 發佈流程
 
@@ -186,11 +199,9 @@ npm run build          # 建置到 dist/（部署前 CI 也會跑）
 
 ### 2.8 已知待辦與想法
 
-- [ ] 英文版 CSMMT 會議名稱「National Conference on Mechanism and Machine Design」是暫譯，有官方英文名稱時要替換。
-- [ ] 翁愷貽老師的英文名「Kai-Yi Weng」是推測的拼法，本人已同意先這樣寫，有正式拼法時再改。
+- [ ] 英文版 CSMMT 會議名稱目前寫成「29th Conference of the Chinese Society of Mechanism and Machine Theory (CSMMT 2026)」，這是暫譯。有官方英文名稱時要替換，可查 <https://www.csmmt2026.org/>。
+- [ ] 翁愷貽老師的英文名「Kai-Yi Weng」，本人已同意先這樣寫，有正式拼法時再改。
 - [ ] IEEE Access 論文審查結果出來後，照 2.4 C 更新。
-- [ ] 本人的公開 repo `tera0406/trash_bin` 可能是垃圾桶專案的程式碼。如果要在專案卡片加「程式碼」連結，先看過 repo 內容，並徵求本人同意。
-- [ ] 可以考慮加一份可下載的一頁式 CV（PDF），內容同樣不含成績等私人資料。
 
 ---
 

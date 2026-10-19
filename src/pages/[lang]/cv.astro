@@ -1,0 +1,106 @@
+---
+// 一頁式 CV：內容和主網站共用 content/*.json，版面固定為 A4。
+// 用 `npm run cv` 產生 PDF（public/cv/），網站上的「CV」按鈕會連到那份 PDF。
+import { content, LANGS, type Lang } from '../../lib/content';
+
+export function getStaticPaths() {
+  return LANGS.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const c = content[lang];
+const ui = c.ui;
+const SEP = lang === 'zh' ? '・' : ' · ';
+const site = 'tera0406.github.io';
+const contacts = [c.contact.email, 'linkedin.com/in/…-243b0a317', 'github.com/tera0406', site];
+const htmlLang = lang === 'zh' ? 'zh-Hant-TW' : 'en';
+const fonts = lang === 'zh'
+  ? 'https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,700&display=block'
+  : 'https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,700&family=Noto+Sans+TC:wght@400&display=block';
+---
+<!doctype html>
+<html lang={htmlLang}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>{c.meta.name} – CV</title>
+  <link rel="stylesheet" href={fonts} />
+  <style>
+    @page { size: A4; margin: 13mm 15mm; }
+    * { box-sizing: border-box; }
+    html { background: #e5e7eb; }
+    body { margin: 0; font-family: "Source Sans 3", "Noto Sans TC", sans-serif; font-size: 9pt; line-height: 1.36; color: #111827; }
+    .page { width: 210mm; min-height: 297mm; margin: 0 auto; padding: 13mm 15mm; background: #fff; }
+    @media print { html { background: #fff; } .page { width: auto; min-height: 0; margin: 0; padding: 0; } }
+    h1 { font-family: "Source Serif 4", "Noto Serif TC", serif; font-size: 20pt; margin: 0; line-height: 1.15; }
+    .alt { color: #4b5563; font-size: 10.5pt; margin-left: 6pt; font-weight: 400; }
+    .sub { margin: 2pt 0 0; color: #374151; }
+    .contact { margin: 3pt 0 0; color: #374151; font-size: 8.6pt; }
+    .contact span + span::before { content: "  |  "; color: #9ca3af; white-space: pre; }
+    h2 { font-family: "Source Serif 4", "Noto Serif TC", serif; font-size: 10.5pt; margin: 7pt 0 2.5pt; padding-bottom: 1.5pt; border-bottom: 0.8pt solid #946318; color: #1f2a44; }
+    .row { display: flex; justify-content: space-between; gap: 10pt; align-items: baseline; }
+    .row .when { flex: none; color: #4b5563; font-size: 8.6pt; white-space: nowrap; }
+    .item { margin: 0 0 3.5pt; break-inside: avoid; }
+    .title { font-weight: 700; }
+    .org { color: #946318; font-weight: 600; }
+    .muted { color: #4b5563; }
+    ul { margin: 1pt 0 0; padding-left: 12pt; }
+    li { margin: 0.6pt 0; }
+    p { margin: 1pt 0 0; }
+    .status { font-size: 8.2pt; border: 0.6pt solid #9ca3af; border-radius: 6pt; padding: 0 4pt; margin-left: 4pt; white-space: nowrap; }
+    strong { font-weight: 700; }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>{c.meta.name}<span class="alt" lang={lang === 'en' ? 'zh-Hant-TW' : 'en'}>{c.meta.nameAlt}</span></h1>
+      <p class="sub">{c.hero.role}{SEP}{c.hero.inst}</p>
+      <p class="contact">{contacts.map((x) => <span>{x}</span>)}</p>
+      <p class="sub"><strong>{ui.labels.interests}{lang === 'zh' ? '：' : ': '}</strong>{c.hero.interests.join(SEP)}</p>
+    </header>
+
+
+    <h2>{ui.sections.education}</h2>
+    {c.education.map((e) => (
+      <div class="item">
+        <div class="row"><span><span class="title">{e.school}</span>{SEP}{e.degree}</span><span class="when">{e.badge}</span></div>
+        <p class="muted">{e.detail}</p>
+      </div>
+    ))}
+
+    <h2>{ui.sections.experience}</h2>
+    {c.experience.map((x) => (
+      <div class="item">
+        <div class="row"><span><span class="title">{x.role}</span>{SEP}<span class="org">{x.org}</span>{SEP}{x.place}</span><span class="when">{x.period}</span></div>
+        <ul>{x.items.map((i) => <li>{i}</li>)}</ul>
+      </div>
+    ))}
+
+    <h2>{ui.sections.research}</h2>
+    {c.research.map((r) => (
+      <div class="item">
+        <div class="row"><span class="title">{r.title}</span>{r.period && <span class="when">{r.period}</span>}</div>
+        <p><span class="org">{r.org}</span></p>
+        <p>{r.summary} <span class="muted"><strong>{ui.labels.myRole}{lang === 'zh' ? '：' : ': '}</strong>{r.brief}</span></p>
+      </div>
+    ))}
+
+    <h2>{ui.sections.publications}</h2>
+    {c.publications.map((p) => (
+      <div class="item">
+        <div class="row"><span class="title" lang={/[一-鿿]/.test(p.title) ? 'zh-Hant-TW' : 'en'}>{p.title}</span><span class="status">{p.status ?? p.year}</span></div>
+        <p class="muted">{p.type}{SEP}{p.venue}</p>
+      </div>
+    ))}
+
+    <h2>{ui.sections.awards}</h2>
+    {c.awards.map((a) => (
+      <div class="item">
+        <div class="row"><span><span class="title">{a.title}</span>{SEP}{a.org}</span>{a.year && <span class="when">{a.year}</span>}</div>
+      </div>
+    ))}
+  </main>
+</body>
+</html>

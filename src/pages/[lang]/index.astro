@@ -18,11 +18,13 @@ const COLON = lang === 'zh' ? '：' : ': ';
 const sections = ['about', 'experience', 'research', 'publications', 'awards', 'activities'] as const;
 const videoById = Object.fromEntries(c.videos.map((v) => [v.youtubeId, v]));
 // [圖示, 名稱, 連結, 列印時顯示的文字]
+const cvUrl = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/cv/Chao-Yuan_Chiang_CV_${lang}.pdf`;
 const links = [
   ['mail', ui.contact.email, `mailto:${c.contact.email}`, c.contact.email],
   ['linkedin', ui.contact.linkedin, c.contact.linkedin, 'linkedin.com/in/…243b0a317'],
   ['github', ui.contact.github, c.contact.github, 'github.com/tera0406'],
   ['box', ui.contact.makerworld, c.contact.makerworld, 'makerworld.com/@cdtera2446890'],
+  ['file', ui.contact.cv, cvUrl, 'tera0406.github.io'],
 ] as const;
 const figId = (file: string) => `fig-${file.replace(/\W/g, '-')}`;
 ---
@@ -58,7 +60,8 @@ const figId = (file: string) => `fig-${file.replace(/\W/g, '-')}`;
           {links.map(([icon, label, href, printText]) => (
             <li><a href={href} title={icon === 'mail' ? c.contact.email : label} aria-label={icon === 'mail' ? `${label}${COLON}${c.contact.email}` : label}
                    data-print={printText} data-email={icon === 'mail' ? c.contact.email : undefined}
-                   rel={icon === 'mail' ? undefined : 'me noopener'}><Icon name={icon} /></a></li>
+                   rel={icon === 'mail' || icon === 'file' ? undefined : 'me noopener'}
+                   download={icon === 'file' ? '' : undefined} type={icon === 'file' ? 'application/pdf' : undefined}><Icon name={icon} /></a></li>
           ))}
         </ul>
         <div class="card interests">
@@ -251,7 +254,7 @@ const figId = (file: string) => `fig-${file.replace(/\W/g, '-')}`;
   <footer class="footer">
     <div class="wrap">
       <span>© 2026 {c.meta.name}{SEP}{ui.updated} <span class="num">{c.updated}</span></span>
-      <span class="tools"><button class="btn" type="button" onclick="window.print()">{ui.print}</button></span>
+      <span class="tools"><a class="btn" href={cvUrl} download type="application/pdf">{ui.downloadCv}</a></span>
     </div>
   </footer>
 

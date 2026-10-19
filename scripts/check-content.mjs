@@ -13,10 +13,10 @@ const en = load('en');
 // 1. 兩個語言的結構（key 與陣列長度）要一致；文字可以不同。
 function shape(o, path = '') {
   if (Array.isArray(o)) return [`${path}[${o.length}]`, ...o.flatMap((v, i) => shape(v, `${path}[${i}]`))];
-  if (o && typeof o === 'object') return Object.keys(o).sort().flatMap((k) => [`${path}.${k}`, ...shape(o[k], `${path}.${k}`)]);
+  if (o && typeof o === 'object') return Object.keys(o).filter((k) => !k.startsWith('_')).sort().flatMap((k) => [`${path}.${k}`, ...shape(o[k], `${path}.${k}`)]);
   return [];
 }
-// 允許只存在於某一語言的欄位（例如中文論文的英文題目 titleEn）。
+// 允許只存在於某一語言的欄位（例如中文論文的英文題目 titleEn）。以 _ 開頭的欄位是維護註記，不比對。
 const optional = /\.titleEn$|\.abstractEn$/;
 const a = new Set(shape(zh).filter((p) => !optional.test(p)));
 const b = new Set(shape(en).filter((p) => !optional.test(p)));
@@ -51,6 +51,11 @@ for (const [lang, c] of [['zh', zh], ['en', en]]) {
     [/g-mail\.nsysu\.edu\.tw/i, '學校信箱（目前決定不公開）'],
   ];
   for (const [re, label] of banned) if (re.test(text)) errors.push(`${lang}.json 含有${label}：${text.match(re)[0]}`);
+}
+
+// 3b. 一頁式 CV 的 PDF 要存在（用 npm run cv 產生）。
+for (const lang of ['en', 'zh']) {
+  if (!existsSync(join(root, 'public', 'cv', `Chao-Yuan_Chiang_CV_${lang}.pdf`))) errors.push(`缺少 public/cv/Chao-Yuan_Chiang_CV_${lang}.pdf，請執行 npm run cv`);
 }
 
 // 4. 中文用語：台灣用語檢查（只檢查中文檔）。

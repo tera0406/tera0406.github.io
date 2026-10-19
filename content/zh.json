@@ -408,7 +408,6 @@
     "skip": "跳到主要內容",
     "switchTo": "English",
     "theme": "切換深色／淺色模式",
-    "print": "列印履歷",
     "nav": {
       "about": "關於我",
       "experience": "經歷",
@@ -460,11 +459,13 @@
       "email": "Email",
       "linkedin": "LinkedIn",
       "github": "GitHub",
-      "makerworld": "MakerWorld"
+      "makerworld": "MakerWorld",
+      "cv": "CV（PDF）"
     },
     "updated": "最後更新",
     "videoConsent": "影片點選後才會從 YouTube（youtube-nocookie.com）載入。",
-    "switchLabel": "切換為英文版"
+    "switchLabel": "切換為英文版",
+    "downloadCv": "下載 CV（PDF）"
   },
   "updated": "2026-10",
   "education": [
