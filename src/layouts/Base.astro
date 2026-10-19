@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { htmlLang, ogLocale, pageUrl, LANGS, type Lang, type Content } from '../lib/content';
+import { fontCss, fontPreloads } from '../lib/fonts';
 
 interface Props { lang: Lang; c: Content }
 const { lang, c } = Astro.props;
@@ -9,16 +10,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const canonical = site + pageUrl(lang);
 const ogImage = `${site}${base}/og-${lang}.png`;
 // 字型：標題用襯線（Source Serif 4／Noto Serif TC），內文用無襯線（Source Sans 3／Noto Sans TC）。
-// 英文頁只需要姓名和「中文」按鈕的幾個中文字，用 text= 參數只下載這些字，減少載入量。
-const latin = 'https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap';
-const cjk = lang === 'zh'
-  ? 'https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap'
-  : `https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap&text=${encodeURIComponent('姜兆源中文')}`;
+// 字型檔自己託管在 public/fonts/（只含網站用到的字，由 npm run fonts 產生），@font-face 直接內嵌。
+const fonts = fontCss(lang, base);
+const preloads = fontPreloads(lang, base);
 const hreflang: Record<Lang, string> = { zh: 'zh-TW', en: 'en' };
 
+// 結構化資料：本人（Person）與論文（ScholarlyArticle），給搜尋引擎與學術索引用。
+const personId = `${site}${base}/#person`;
 const person = {
-  '@context': 'https://schema.org',
   '@type': 'Person',
+  '@id': personId,
   name: 'Chao-Yuan Chiang',
   alternateName: ['姜兆源', 'Tera'],
   url: canonical,
@@ -26,6 +27,18 @@ const person = {
   affiliation: { '@type': 'CollegeOrUniversity', name: 'National Sun Yat-sen University' },
   sameAs: [c.contact.linkedin, c.contact.github, c.contact.makerworld],
 };
+const articles = c.publications.map((p) => ({
+  '@type': 'ScholarlyArticle',
+  '@id': `${canonical}#${p.id}`,
+  headline: p.title,
+  abstract: p.abstract,
+  author: { '@id': personId },
+  inLanguage: /[一-鿿]/.test(p.title) ? 'zh-Hant' : 'en',
+  isPartOf: { '@type': 'Periodical', name: p.venue },
+  ...(p.year ? { datePublished: p.year.slice(0, 4) } : {}),
+  ...(p.status ? { creativeWorkStatus: p.status } : {}),
+}));
+const jsonLd = { '@context': 'https://schema.org', '@graph': [person, ...articles] };
 ---
 <!doctype html>
 <html lang={htmlLang[lang]}>
@@ -41,6 +54,7 @@ const person = {
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#12161b" media="(prefers-color-scheme: dark)" />
   <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href={`${base}/apple-touch-icon.png`} />
 
   <meta property="og:type" content="profile" />
   <meta property="og:title" content={c.meta.title} />
@@ -54,19 +68,14 @@ const person = {
   {LANGS.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={ogLocale[l]} />)}
   <meta name="twitter:card" content="summary_large_image" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  {[latin, cjk].map((href) => <>
-    <link rel="preload" as="style" href={href} />
-    <link rel="stylesheet" href={href} media="print" onload="this.media='all'" />
-    <noscript><link rel="stylesheet" href={href} /></noscript>
-  </>)}
+  {preloads.map((href) => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
+  <style set:html={fonts} />
 
   <script is:inline>
     // 深色模式：記住使用者選擇；沒選過就跟隨系統。
     try { var t = localStorage.getItem('theme'); if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t; } catch (e) {}
   </script>
-  <script type="application/ld+json" set:html={JSON.stringify(person)} />
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 </head>
 <body>
   <slot />

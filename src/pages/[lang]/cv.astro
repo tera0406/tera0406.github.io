@@ -2,6 +2,7 @@
 // 一頁式 CV：內容和主網站共用 content/*.json，版面固定為 A4。
 // 用 `npm run cv` 產生 PDF（public/cv/），網站上的「CV」按鈕會連到那份 PDF。
 import { content, LANGS, type Lang } from '../../lib/content';
+import { fontCss } from '../../lib/fonts';
 
 export function getStaticPaths() {
   return LANGS.map((lang) => ({ params: { lang } }));
@@ -14,9 +15,8 @@ const SEP = lang === 'zh' ? '・' : ' · ';
 const site = 'tera0406.github.io';
 const contacts = [c.contact.email, 'linkedin.com/in/…-243b0a317', 'github.com/tera0406', site];
 const htmlLang = lang === 'zh' ? 'zh-Hant-TW' : 'en';
-const fonts = lang === 'zh'
-  ? 'https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,700&display=block'
-  : 'https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,700&family=Noto+Sans+TC:wght@400&display=block';
+// 字型與主網站共用 public/fonts/ 的子集；輸出 PDF 時要等字型載完（block）。
+const fonts = fontCss(lang, import.meta.env.BASE_URL.replace(/\/$/, ''), 'block');
 ---
 <!doctype html>
 <html lang={htmlLang}>
@@ -25,7 +25,7 @@ const fonts = lang === 'zh'
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex" />
   <title>{c.meta.name} – CV</title>
-  <link rel="stylesheet" href={fonts} />
+  <style set:html={fonts} />
   <style>
     @page { size: A4; margin: 13mm 15mm; }
     * { box-sizing: border-box; }

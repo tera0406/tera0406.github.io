@@ -8,6 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check:content": "node scripts/check-content.mjs",
+    "fonts": "node scripts/build-fonts.mjs",
+    "icons": "node scripts/build-icons.mjs",
     "cv": "astro build && node scripts/build-cv.mjs && astro build"
   },
   "dependencies": {

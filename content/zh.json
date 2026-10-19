@@ -21,6 +21,39 @@
     "role": "大學部四年級",
     "inst": "國立中山大學・機械與機電工程學系"
   },
+  "news": [
+    {
+      "date": "2027-01",
+      "text": "將赴新加坡南洋理工大學（NTU）交換，至 2027 年 5 月。",
+      "link": "education"
+    },
+    {
+      "date": "2026-11",
+      "text": "論文將於 CSMMT 2026 發表（11 月 6–7 日，國立臺灣科技大學）。",
+      "link": "csmmt-2026"
+    },
+    {
+      "date": "2026-09",
+      "text": "期刊稿件投稿 IEEE Access（9 月 20 日），審查中。",
+      "link": "ieee-access-2026"
+    },
+    {
+      "date": "2026-07",
+      "text": "國科會大專學生研究計畫核定通過，開始執行（至 2027 年 2 月）。",
+      "link": "smart-bin"
+    },
+    {
+      "date": "2026-07",
+      "text": "於臺北科大 City Science Lab 進行 UROP 暑期研究實習（7–8 月）。",
+      "link": "openarm-bimanual"
+    },
+    {
+      "date": "2025",
+      "text": "TEL 機器人大賽 2025：團隊獲創意技術獎（優等）。",
+      "link": "tel-robot-combat"
+    }
+  ],
+  "_newsNote": "news：最新動態，date 用 YYYY-MM（只知道年份就寫 YYYY）；頁面依日期由新到舊排序，晚於目前日期的會標示「即將」。link 是頁面上某個區塊或專案的 id（education、smart-bin、csmmt-2026…）。只寫有出處的事實。",
   "research": [
     {
       "id": "smart-bin",
@@ -444,7 +477,8 @@
       "seeProject": "專案介紹",
       "emailCopied": "已複製信箱",
       "openGmail": "用 Gmail 寄信",
-      "close": "關閉"
+      "close": "關閉",
+      "upcoming": "即將"
     },
     "sections": {
       "about": "關於我",
@@ -453,7 +487,8 @@
       "awards": "獲獎與計畫",
       "activities": "其他作品與活動",
       "education": "學歷",
-      "experience": "經歷"
+      "experience": "經歷",
+      "news": "最新動態"
     },
     "contact": {
       "email": "Email",
