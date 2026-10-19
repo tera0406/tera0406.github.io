@@ -48,7 +48,7 @@ npm run cv             # 重新產生一頁式 CV（public/cv/*.pdf），內容�
 | `public/og-zh.png`、`public/og-en.png` | 社群分享預覽圖（1200×630） |
 | `src/pages/[lang]/cv.astro` | 一頁式 CV 的 A4 版面（`/en/cv/`、`/zh/cv/`，noindex），內容讀同一份 JSON |
 | `scripts/build-cv.mjs`、`public/cv/*.pdf` | 用 Chromium 把 CV 頁輸出成 PDF；超過一頁會失敗。網站左欄的 CV 圖示和頁尾的「下載 CV」連到這兩份 PDF |
-| `astro.config.mjs` | 依 `GITHUB_REPOSITORY` 自動決定 `base`：repo 名稱是 `帳號.github.io` 時用 `/` |
+| `astro.config.mjs` | 依 `GITHUB_REPOSITORY` 自動決定 `base`：repo 名稱是 `帳號.github.io` 時用 `/`。`inlineStylesheets: always` 把 CSS 內嵌進 HTML，少一次阻擋繪製的請求 |
 | `.github/workflows/deploy.yml` | push 到 `main` 時依序執行 `npm ci` → `check:content` → 安裝 Chromium → `npm run cv`（建置＋產生 CV PDF＋再建置）→ 部署 |
 | `.github/workflows/check.yml` | 每個 PR 都會跑同樣的檢查與建置（不部署），並把產生的 CV PDF 放到 workflow artifact 供檢視。PR 的 Check 沒過就不要合併 |
 

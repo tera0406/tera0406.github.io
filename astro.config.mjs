@@ -12,5 +12,6 @@ export default defineConfig({
   site: `https://${owner.toLowerCase()}.github.io`,
   base: isUserSite ? '/' : `/${repo}`,
   trailingSlash: 'always',
-  build: { format: 'directory' },
+  // inlineStylesheets：把 global.css 直接內嵌進 HTML（約 13 KB），首次繪製不用再等一次 CSS 請求。
+  build: { format: 'directory', inlineStylesheets: 'always' },
 });
