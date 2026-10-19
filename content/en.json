@@ -320,12 +320,13 @@
       "id": "csmmt-2026",
       "type": "Conference paper",
       "title": "Development of an AIoT Smart Waste-Sorting Bin Integrating Multimodal Cross-Attention Fusion and an Evidential Cloud-Edge Fallback Decision Mechanism",
-      "venue": "29th National Conference on Mechanism and Machine Design (CSMMT 2026), Paper No. 22, National Taiwan University of Science and Technology, Taipei, Taiwan",
+      "venue": "29th Conference of the Chinese Society of Mechanism and Machine Theory (CSMMT 2026), Paper No. 22, National Taiwan University of Science and Technology, Taipei, Taiwan",
       "status": "Accepted with minor revisions",
       "date": "Conference: Nov. 6–7, 2026",
       "abstract": "This study implements an AIoT smart waste-sorting bin with edge–cloud collaboration to address two problems: discriminating same-colored objects made of different materials, and high-confidence misclassification caused by overconfident edge models. For recognition, a cross-attention network fuses visual images and impact acoustics (Mel spectrograms), and modality dropout training handles thin, lightweight waste that produces no impact sound. For decision-making, evidential deep learning quantifies epistemic uncertainty; when it exceeds a threshold calibrated on the validation set, a cloud vision-language model (Gemini) performs fallback inference, and a two-degree-of-freedom pan-tilt mechanism with an anti-jamming function performs the physical sorting. Validated on the prototype with 1,305 paired image and impact-sound samples, fusion raised test accuracy from 92.89% (vision only) to 98.48% and maintained 96.45% when the audio input was masked; the edge–cloud cascade reached 99.49%, higher than both the edge-only and cloud-only configurations.",
       "year": "2026",
-      "statusKind": "ok"
+      "statusKind": "ok",
+      "_note": "English conference name is a working translation based on the organizer (Chinese Society of Mechanism and Machine Theory); replace with the official English name from https://www.csmmt2026.org/ when confirmed."
     },
     {
       "id": "bachelor-thesis-114",
@@ -407,7 +408,6 @@
     "skip": "Skip to main content",
     "switchTo": "中文",
     "theme": "Toggle dark/light mode",
-    "print": "Print CV",
     "nav": {
       "about": "About",
       "experience": "Experience",
@@ -459,11 +459,13 @@
       "email": "Email",
       "linkedin": "LinkedIn",
       "github": "GitHub",
-      "makerworld": "MakerWorld"
+      "makerworld": "MakerWorld",
+      "cv": "CV (PDF)"
     },
     "updated": "Last updated",
     "videoConsent": "Videos load from YouTube (youtube-nocookie.com) only after you click.",
-    "switchLabel": "Switch to Traditional Chinese"
+    "switchLabel": "Switch to Traditional Chinese",
+    "downloadCv": "Download CV (PDF)"
   },
   "updated": "2026-10",
   "education": [
