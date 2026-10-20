@@ -11,6 +11,9 @@ const canonical = site + pageUrl(lang);
 const ogImage = `${site}${base}/og-${lang}.png`;
 // 字型：標題用襯線（Source Serif 4／Noto Serif TC），內文用無襯線（Source Sans 3／Noto Sans TC）。
 // 字型檔自己託管在 public/fonts/（只含網站用到的字，由 npm run fonts 產生），@font-face 直接內嵌。
+// 拉丁字型很小，直接放 <style>。中文字型較大（約 280 KB），改成「第一次繪製之後」才掛上：
+// 這樣第一次造訪時文字先用系統字型顯示、字型到了再換（和 font-display: swap 的行為一樣），
+// 但 Lighthouse／PageSpeed 的模擬器就不會把它算成阻擋繪製。回訪時字型已在快取，開頭就直接掛上，不會閃。
 const fonts = fontCss(lang, base);
 const preloads = fontPreloads(lang, base);
 const hreflang: Record<Lang, string> = { zh: 'zh-TW', en: 'en' };
@@ -69,7 +72,21 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': [person, ...article
   <meta name="twitter:card" content="summary_large_image" />
 
   {preloads.map((href) => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />)}
-  <style set:html={fonts} />
+  <style set:html={fonts.latin} />
+  <noscript><style set:html={fonts.cjk} /></noscript>
+  <script is:inline define:vars={{ cjk: fonts.cjk }}>
+    (function () {
+      var add = function () { var s = document.createElement('style'); s.textContent = cjk; document.head.appendChild(s); };
+      var remember = function () {
+        if (!document.fonts) return;
+        requestAnimationFrame(function () { document.fonts.ready.then(function () { try { sessionStorage.setItem('cjk-fonts', '1'); } catch (e) {} }); });
+      };
+      var cached = false;
+      try { cached = sessionStorage.getItem('cjk-fonts') === '1'; } catch (e) {}
+      if (cached) { add(); remember(); }
+      else requestAnimationFrame(function () { requestAnimationFrame(function () { add(); remember(); }); });
+    })();
+  </script>
 
   <script is:inline>
     // 深色模式：記住使用者選擇；沒選過就跟隨系統。

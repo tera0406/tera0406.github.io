@@ -36,9 +36,9 @@ npm run cv             # 重新產生一頁式 CV（public/cv/*.pdf），內容�
 | `src/pages/[lang]/index.astro` | 主頁面模板：左側個人欄＋右側各區塊 |
 | `src/pages/index.astro` | 根網址的語言轉址 |
 | `src/pages/404.astro`、`src/pages/sitemap.xml.ts` | 404 頁面、sitemap |
-| `src/layouts/Base.astro` | `<head>`：SEO、hreflang、Open Graph、字型（內嵌 `@font-face`）、JSON-LD（Person＋每篇論文的 ScholarlyArticle） |
-| `public/fonts/`、`src/lib/fonts.ts` | **自託管字型子集**（不連 Google Fonts）。`npm run fonts` 會讀內容裡用到的字，只下載這些字的 Noto Sans TC／Noto Serif TC，加上拉丁字型的 latin 子集，寫出 `fonts-zh.css`、`fonts-en.css` 和 `manifest.json`。內容新增了沒涵蓋的字，`check:content` 會擋下來並提示重跑 |
-| `scripts/build-fonts.mjs`、`scripts/font-chars.mjs` | 產生字型子集的腳本；`font-chars.mjs` 負責收集用到的字（內文字型＝全部；襯線標題字型只收姓名、區塊標題、專案標題） |
+| `src/layouts/Base.astro` | `<head>`：SEO、hreflang、Open Graph、字型、JSON-LD（Person＋每篇論文的 ScholarlyArticle）。字型的 `@font-face` 直接內嵌：拉丁字型放 `<style>`；中文字型由一小段 inline script 在**第一次繪製之後**掛上（回訪時字型已快取就立刻掛上），這樣 PageSpeed 不會把中文字型算成阻擋繪製。不要改回同步的 `<style>`，中文頁的效能分數會從 99 掉到 85 |
+| `public/fonts/`、`src/lib/fonts.ts` | **自託管字型子集**（不連 Google Fonts）。`npm run fonts` 會讀內容裡用到的字，用 HarfBuzz（npm 套件 `subset-font`）從完整的 Noto Sans TC／Noto Serif TC 只留下這些字，加上拉丁字型的 latin 子集，寫出 `fonts-zh.css`、`fonts-en.css` 和 `manifest.json`。內容新增了沒涵蓋的字，`check:content` 會擋下來並提示重跑。**每個字重只有一個檔**，不要切片（切片會讓排版變慢） |
+| `scripts/build-fonts.mjs`、`scripts/font-chars.mjs` | 產生字型子集的腳本；`font-chars.mjs` 負責收集用到的字（內文字型＝全部；襯線標題字型只收姓名、區塊標題、專案標題）。完整的 TTF 會快取在 `node_modules/.cache/fonts/` |
 | `public/apple-touch-icon.png`、`scripts/build-icons.mjs` | iOS 主畫面圖示（180×180），由 `favicon.svg` 產生：`npm run icons`，只有改了 favicon 才要重跑 |
 | `src/components/Video.astro` | YouTube 延遲載入（youtube-nocookie，點了才載入；`poster` 是預覽圖） |
 | `src/components/Icon.astro` | 左欄的圖示（Lucide：mail／linkedin／github／box） |
@@ -168,7 +168,7 @@ CI 部署時會用 Chromium 重新產生 CV 的 PDF，所以**線上的 PDF 永�
 
 字型是自己託管的子集，只包含網站用到的字。改了 `content/*.json` 或樣板文字之後：
 
-1. 執行 `npm run fonts`（需要連到 `fonts.googleapis.com` 與 `fonts.gstatic.com`）。它會重新收集用到的字、下載子集到 `public/fonts/`，並更新 `manifest.json`。
+1. 執行 `npm run fonts`（需要連到 `fonts.googleapis.com` 與 `fonts.gstatic.com`；第一次會下載約 30 MB 的完整中文字型到 `node_modules/.cache/fonts/`，之後重跑很快）。它會重新收集用到的字、在本機子集化成 woff2 放到 `public/fonts/`，並更新 `manifest.json`。
 2. `npm run check:content` 會比對內容的字和 `manifest.json`，缺字就會失敗並列出缺哪些字。CI 也會跑這個檢查，所以忘了重跑時部署會被擋下來。
 3. 把 `public/fonts/` 的變動一起 commit。
 4. 襯線標題字型（Noto Serif TC）只涵蓋姓名、區塊標題、專案標題。如果版面把襯線字型用到其他欄位，要在 `scripts/font-chars.mjs` 的 `collectHeadingChars()` 加上那個欄位。
