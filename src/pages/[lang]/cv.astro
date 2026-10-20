@@ -16,7 +16,8 @@ const site = 'tera0406.github.io';
 const contacts = [c.contact.email, 'linkedin.com/in/…-243b0a317', 'github.com/tera0406', site];
 const htmlLang = lang === 'zh' ? 'zh-Hant-TW' : 'en';
 // 字型與主網站共用 public/fonts/ 的子集；輸出 PDF 時要等字型載完（block）。
-const fonts = fontCss(lang, import.meta.env.BASE_URL.replace(/\/$/, ''), 'block');
+const { latin, cjk } = fontCss(lang, import.meta.env.BASE_URL.replace(/\/$/, ''), 'block');
+const fonts = `${latin}\n${cjk}`;
 ---
 <!doctype html>
 <html lang={htmlLang}>
