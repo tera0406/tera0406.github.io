@@ -5,7 +5,11 @@ import { defineConfig } from 'astro/config';
 // - repo 名稱是「帳號.github.io」（例如 tera0406.github.io）→ https://tera0406.github.io/
 // - 其他名稱（例如 portfolio）→ https://tera0406.github.io/portfolio/
 // 在自己電腦上預覽時一律用根目錄（http://localhost:4321/）。
-const [owner = 'tera0406', repo = ''] = (process.env.GITHUB_REPOSITORY ?? '').split('/');
+// GITHUB_REPOSITORY 未設時 ''.split('/') 會得到 ['']（空字串而非 undefined），
+// 解構預設值不會生效，所以用 || 讓空值確實回退到 tera0406。
+const parts = (process.env.GITHUB_REPOSITORY || '').split('/');
+const owner = parts[0] || 'tera0406';
+const repo = parts[1] || '';
 const isUserSite = !repo || repo.toLowerCase() === `${owner.toLowerCase()}.github.io`;
 
 export default defineConfig({

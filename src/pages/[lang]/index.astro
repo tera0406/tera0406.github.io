@@ -214,7 +214,7 @@ const news = [...c.news].sort((a, b) => b.date.localeCompare(a.date));
         <h2 class="section-title" id="h-pubs">{ui.sections.publications}</h2>
         <div class="stack">
           {c.publications.map((p) => (
-            <article class="card entry pub">
+            <article class="card entry pub" id={p.id}>
               <div class="entry-head">
                 <h3 lang={/[一-鿿]/.test(p.title) ? 'zh-Hant-TW' : 'en'}>{p.title}</h3>
                 {p.status && <span class:list={['pill', p.statusKind]}>{p.status}</span>}
@@ -306,12 +306,13 @@ const news = [...c.news].sort((a, b) => b.date.localeCompare(a.date));
     // 連到專案裡的圖片時，自動展開該專案的詳細內容。
     const openTarget = () => {
       if (!location.hash) return;
-      const el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
-      const details = el?.closest('details');
-      if (el && details && !details.open) {
-        details.open = true;
-        el.scrollIntoView({ block: 'center' });
-      }
+      let id;
+      try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
+      const el = document.getElementById(id);
+      // 錨點可能落在卡片本身（<details> 在其內）或圖片（<details> 在其祖先）。
+      const details = el?.closest('details') || el?.querySelector('details');
+      if (el && details && !details.open) details.open = true;
+      if (el) el.scrollIntoView({ block: 'center' });
     };
     addEventListener('hashchange', openTarget); openTarget();
     // 最新動態：日期在今天之後的項目標示「即將」（在瀏覽器端判斷，不會因為網站沒重新部署而過期）。
