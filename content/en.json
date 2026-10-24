@@ -3,8 +3,8 @@
     "lang": "en",
     "name": "Chao-Yuan Chiang",
     "nameAlt": "姜兆源 (Tera)",
-    "title": "Chao-Yuan Chiang | Mechanism Design · Mechatronic Integration · Robot Learning",
-    "description": "Chao-Yuan (Tera) Chiang, a fourth-year undergraduate in the Department of Mechanical and Electro-Mechanical Engineering at National Sun Yat-sen University (NSYSU). This site collects my research projects, papers, competitions, and personal work, with a focus on robot manipulation, control, and transferring policies learned in simulation reliably to physical robots.",
+    "title": "Chao-Yuan Chiang | Robot Manipulation & Sim-to-Real",
+    "description": "Chao-Yuan (Tera) Chiang, a mechanical engineering undergraduate at NSYSU. Research in robot manipulation, control, and sim-to-real transfer.",
     "photo": {
       "file": "s03_Img_photo.jpg",
       "alt": "Portrait of Chao-Yuan Chiang wearing glasses and a light blue shirt"
@@ -24,18 +24,18 @@
   "news": [
     {
       "date": "2027-01",
-      "text": "Exchange semester at Nanyang Technological University (NTU), Singapore, through May 2027.",
+      "text": "Admitted to an exchange semester at Nanyang Technological University (NTU), Singapore (Jan.–May 2027).",
       "link": "education"
     },
     {
       "date": "2026-11",
-      "text": "Paper to be presented at CSMMT 2026 (Nov. 6–7, National Taiwan University of Science and Technology).",
-      "link": "csmmt-2026"
+      "text": "Paper accepted (minor revisions) at CSMMT 2026 (Paper No. 22, NTUST).",
+      "link": "waste-sorting-bin"
     },
     {
       "date": "2026-09",
       "text": "Journal manuscript submitted to IEEE Access (Sep. 20); under review.",
-      "link": "ieee-access-2026"
+      "link": "waste-sorting-bin"
     },
     {
       "date": "2026-07",
@@ -339,37 +339,17 @@
   ],
   "publications": [
     {
-      "id": "ieee-access-2026",
+      "id": "waste-sorting-bin",
       "type": "Journal manuscript",
       "title": "Modality-Robust Confidence-Gated Cascade for Edge–Cloud Waste Sorting: Design and Evaluation on a Physical Prototype",
       "venue": "IEEE Access (Regular Manuscript)",
       "status": "Under review",
+      "statusKind": "review",
       "date": "Submitted Sep. 20, 2026",
-      "abstract": "Existing waste classification methods rely on a single visual image and cannot reliably separate objects that look alike but differ in material, while recent work that fuses vision with impact sound assumes that both modalities are always available. We present a smart waste-sorting bin in which bidirectional cross-attention fuses visual and acoustic features, modality dropout training keeps the model discriminative when the auditory input fails, and an evidential output layer supplies an uncertainty value that gates whether a sample is decided at the edge or deferred to a cloud vision-language model. The system was deployed on a two-degree-of-freedom pan-tilt mechanism with an infrared post-sorting verification loop and validated over 1,305 physical drops: fusion reached 98.48% accuracy against 92.89% for a vision-only baseline, and retained 96.45% when the auditory input was fully masked, against 89.34% without modality dropout training. With the deferral threshold calibrated on a held-out validation set, the cascade reached 99.49%, above both the edge-only and cloud-only configurations.",
       "year": "2026",
-      "statusKind": "review"
-    },
-    {
-      "id": "csmmt-2026",
-      "type": "Conference paper",
-      "title": "Development of an AIoT Smart Waste-Sorting Bin Integrating Multimodal Cross-Attention Fusion and an Evidential Cloud-Edge Fallback Decision Mechanism",
-      "venue": "29th Conference of the Chinese Society of Mechanism and Machine Theory (CSMMT 2026), Paper No. 22, National Taiwan University of Science and Technology, Taipei, Taiwan",
-      "status": "Accepted with minor revisions",
-      "date": "Conference: Nov. 6–7, 2026",
-      "abstract": "This study implements an AIoT smart waste-sorting bin with edge–cloud collaboration to address two problems: discriminating same-colored objects made of different materials, and high-confidence misclassification caused by overconfident edge models. For recognition, a cross-attention network fuses visual images and impact acoustics (Mel spectrograms), and modality dropout training handles thin, lightweight waste that produces no impact sound. For decision-making, evidential deep learning quantifies epistemic uncertainty; when it exceeds a threshold calibrated on the validation set, a cloud vision-language model (Gemini) performs fallback inference, and a two-degree-of-freedom pan-tilt mechanism with an anti-jamming function performs the physical sorting. Validated on the prototype with 1,305 paired image and impact-sound samples, fusion raised test accuracy from 92.89% (vision only) to 98.48% and maintained 96.45% when the audio input was masked; the edge–cloud cascade reached 99.49%, higher than both the edge-only and cloud-only configurations.",
-      "year": "2026",
-      "statusKind": "ok",
-      "_note": "English conference name is a working translation based on the organizer (Chinese Society of Mechanism and Machine Theory); replace with the official English name from https://www.csmmt2026.org/ when confirmed."
-    },
-    {
-      "id": "bachelor-thesis-114",
-      "type": "Undergraduate thesis",
-      "title": "Development of an AIoT Smart Waste-Sorting Bin Integrating Multimodal Cross-Attention Fusion and an Evidential Cloud-Edge Fallback Decision Mechanism",
-      "venue": "Department of Mechanical and Electro-Mechanical Engineering, NSYSU (in Chinese)",
-      "abstract": "This work builds an AIoT smart waste-sorting bin with dynamic fault tolerance and edge–cloud collaboration. On the hardware side, a two-degree-of-freedom concealed pan-tilt mechanism with a center-recessed guide platform divides the storage space into four zones, and large-angle tilting and high-frequency vibration clear jammed items. On the algorithm side, cross-attention fuses image features with Mel-frequency cepstral coefficient (MFCC) audio features, and modality dropout training handles thin, lightweight waste that falls without making a sound. For decision-making, evidential deep learning quantifies epistemic uncertainty, and when it exceeds a threshold, the cloud vision-language model Gemini performs fallback inference. After validation on the physical mechanism and tuning with an accuracy–speed trade-off curve, overall classification accuracy rose from 85% with a single modality to consistently above 93%.",
-      "year": "2025–26",
-      "statusKind": "plain",
-      "note": "The thesis reports an earlier stage of this research; later results are in the two papers above."
+      "note": "The same research was also accepted (minor revisions) as a conference paper at the 29th Conference of the Chinese Society of Mechanism and Machine Theory (CSMMT 2026, Paper No. 22, NTUST), and originated as the author's undergraduate thesis (NSYSU, 2025–26).",
+      "_note": "CSMMT English name is a working translation; replace with the official name when confirmed (README 2.8).",
+      "abstract": "Existing waste classification methods rely on a single visual image and cannot reliably separate objects that look alike but differ in material, while recent work that fuses vision with impact sound assumes that both modalities are always available. We present a smart waste-sorting bin in which bidirectional cross-attention fuses visual and acoustic features, modality dropout training keeps the model discriminative when the auditory input fails, and an evidential output layer supplies an uncertainty value that gates whether a sample is decided at the edge or deferred to a cloud vision-language model. The system was deployed on a two-degree-of-freedom pan-tilt mechanism with an infrared post-sorting verification loop and validated over 1,305 physical drops: fusion reached 98.48% accuracy against 92.89% for a vision-only baseline, and retained 96.45% when the auditory input was fully masked, against 89.34% without modality dropout training. With the deferral threshold calibrated on a held-out validation set, the cascade reached 99.49%, above both the edge-only and cloud-only configurations."
     }
   ],
   "awards": [

@@ -48,8 +48,24 @@ for (const [lang, c] of [['zh', zh], ['en', en]]) {
     [/\b09\d{2}[- ]?\d{3}[- ]?\d{3}\b/, '手機號碼'],
     [/\bB\d{9}\b/i, '學號'],
     [/g-mail\.nsysu\.edu\.tw/i, '學校信箱（目前決定不公開）'],
+    // 隱私禁區（README §2.2／§3）。注意：不封鎖 gripper／夾爪，那是機器導航課程的正當用語。
+    [/trash_bin/i, '私人 repo 名稱 trash_bin'],
+    [/排球|volleyball/i, '排球隊內容'],
+    [/thingiverse\.com/i, 'Thingiverse 帳號連結（會透露生日）'],
+    [/\bUMI\b/, '未公開的 UMI 夾爪專案'],
   ];
   for (const [re, label] of banned) if (re.test(text)) errors.push(`${lang}.json 含有${label}：${text.match(re)[0]}`);
+
+  // 3d. 結構性防護：連結 scheme、最新動態錨點、id 唯一性、HTML 注入。
+  const anchors = new Set(['about', 'news', 'education', 'experience', 'research', 'publications', 'awards', 'activities',
+    ...(c.research ?? []).map((r) => r.id), ...(c.publications ?? []).map((p) => p.id)]);
+  const ids = [...(c.research ?? []).map((r) => r.id), ...(c.publications ?? []).map((p) => p.id)];
+  for (const id of new Set(ids)) if (ids.filter((x) => x === id).length > 1) errors.push(`${lang}.json：research/publications 有重複的 id「${id}」`);
+  for (const u of [c.contact?.linkedin, c.contact?.github, c.contact?.makerworld, ...(c.activities ?? []).map((a) => a.link)].filter(Boolean))
+    if (!/^https?:\/\//.test(u)) errors.push(`${lang}.json：對外連結必須是 http(s) 網址：${u}`);
+  for (const n of c.news ?? []) if (n.link && !anchors.has(n.link)) errors.push(`${lang}.json：最新動態連結「${n.link}」沒有對應的區塊或專案 id`);
+  // 任何字串值都不可含 '<'：Base.astro 的 JSON-LD 以 set:html 原樣輸出，含 '<' 的內容可能突破 <script> 區塊。
+  walk(c, (o) => { for (const [k, v] of Object.entries(o)) if (typeof v === 'string' && v.includes('<')) errors.push(`${lang}.json：欄位「${k}」含有「<」，可能注入 HTML：${v.slice(0, 40)}`); });
 }
 
 // 3b. 一頁式 CV 的 PDF 要存在（用 npm run cv 產生）。

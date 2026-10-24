@@ -38,10 +38,15 @@ const articles = c.publications.map((p) => ({
   author: { '@id': personId },
   inLanguage: /[一-鿿]/.test(p.title) ? 'zh-Hant' : 'en',
   isPartOf: { '@type': 'Periodical', name: p.venue },
-  ...(p.year ? { datePublished: p.year.slice(0, 4) } : {}),
+  // 只有確實已出版（無審查中／接受中狀態）且年份是可解析的西元年時才輸出 datePublished，
+  // 避免對審查中的稿件宣稱出版日期，或輸出「114 學年度」這種非 ISO 日期。
+  ...(((!p.statusKind || p.statusKind === 'plain') && /\b(19|20)\d{2}\b/.test(p.year ?? '')) ? { datePublished: (p.year.match(/\b(19|20)\d{2}\b/) ?? [])[0] } : {}),
   ...(p.status ? { creativeWorkStatus: p.status } : {}),
 }));
 const jsonLd = { '@context': 'https://schema.org', '@graph': [person, ...articles] };
+// JSON.stringify 不會跳脫 '<'，而這段用 set:html 原樣寫入，所以把 < > & 轉成 \uXXXX，
+// 避免任何內容欄位（含 </script>）突破 <script> 元素。這些在 JSON 解析後仍還原為原字元。
+const jsonLdSafe = JSON.stringify(jsonLd).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
 ---
 <!doctype html>
 <html lang={htmlLang[lang]}>
@@ -92,7 +97,7 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': [person, ...article
     // 深色模式：記住使用者選擇；沒選過就跟隨系統。
     try { var t = localStorage.getItem('theme'); if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t; } catch (e) {}
   </script>
-  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" set:html={jsonLdSafe} />
 </head>
 <body>
   <slot />
